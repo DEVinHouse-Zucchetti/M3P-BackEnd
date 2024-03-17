@@ -3,27 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
-use App\Traits\HttpResponses;
-
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
-use Symfony\Component\HttpFoundation\Response;
 
 class StudentController extends Controller
 {
-    use HttpResponses;
-
-    public function index()
+    public function index(Request $request)
     {
         try {
+            $searchQuery = $request->input('q');
 
-            $students = Student::all();
-            return $students;
+            $studentsQuery = Student::query();
 
-        } catch (\Exception $exception) {
-            return $this->error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            if ($searchQuery) {
+                $studentsQuery->where('name', 'like', "%$searchQuery%")
+                              ->orWhere('cpf', 'like', "%$searchQuery%")
+                              ->orWhere('email', 'like', "%$searchQuery%");
+            }
+
+            $students = $studentsQuery->orderBy('name')->get();
+
+            $formattedStudents = $students->map(function ($student) {
+                return [
+                    'id' => $student->id,
+                    'name' => $student->name,
+                    'email' => $student->email,
+                    'contact' => $student->contact,
+                    'cpf' => $student->cpf,
+                ];
+            });
+
+            return response()->json($formattedStudents, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
         }
     }
-
 }
