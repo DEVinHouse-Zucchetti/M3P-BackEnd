@@ -15,7 +15,7 @@ use App\Http\Services\UserStudent\CreateOneUserStudentService;
 use App\Models\Student;
 
 use App\Traits\HttpResponses;
-
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class StudentController extends Controller
@@ -63,5 +63,24 @@ class StudentController extends Controller
         $sendCredentialsStudentEmail->handle($student, $password);
 
         return $student;
+    }
+
+    public function destroy($id)
+    {
+
+        $userId = Auth::id();
+
+        if ($userId != 2) {
+            return $this->error('Usuário logado não pode excluir estudante, somente recepcionista.', Response::HTTP_FORBIDDEN);
+        }
+
+        $student = Student::find($id);
+        if (!$student) {
+            return $this->error('Estudante não encontrado.', Response::HTTP_NOT_FOUND);
+        }
+
+        $student->delete();
+
+        return $this->response('', Response::HTTP_NO_CONTENT);
     }
 }
