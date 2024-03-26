@@ -11,7 +11,6 @@ class StudentController extends Controller
 
     public function index(Request $request)
     {
-        try {
             $user = $request->user();
 
             if (!$user->can('get-students')) {
@@ -51,9 +50,6 @@ class StudentController extends Controller
             });
 
             return response()->json($formattedStudents, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro interno do servidor'], 500);
-        }
     }
 
 }
