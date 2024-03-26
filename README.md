@@ -1,66 +1,226 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Setup Local (Manual)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Para garantir a execução correta da API no ambiente local, siga as etapas:
 
-## About Laravel
+### Crie o banco de dados usando docker
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```sh
+docker run --name academia -e POSTGRESQL_USERNAME=admin -e POSTGRESQL_PASSWORD=admin -e POSTGRESQL_DATABASE=academia_api -p 5432:5432 bitnami/postgresql
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+#### Conecte com o dbeaver para visualizar os dados - opcional
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+No DBeaver, vá para "Nova Conexão", escolha "PostgreSQL", avance para a próxima aba e insira as credenciais conforme definido no comando de criação do banco de dados. Teste a conexão e conclua o processo.
 
-## Learning Laravel
+##
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Clone o projeto
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```sh
+cd "caminho/da/sua/pasta"
+git clone https://github.com/DEVinHouse-Zucchetti/M3P-BackEnd
+cd "M3P-BackEnd"
+code ./ #Abrirá o Vscode na raiz do projeto
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Instale as dependências do projeto
 
-## Laravel Sponsors
+```sh
+composer install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+##
 
-### Premium Partners
+### Configure o ambiente
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Na raiz do projeto, localize o arquivo .env.example, duplique-o e altere seu nome para .env, inicialmente, nenhuma outra alteração é necessária.
 
-## Contributing
+### Execute o comando para criar as migrações do banco de dados
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```sh
+php artisan migrate
+```
 
-## Code of Conduct
+### Execute a seed para popular o banco de dados
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```sh
+php artisan db:seed
+```
 
-## Security Vulnerabilities
+### Execute o comando para criação da APP KEY
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```sh
+php artisan key:generate
+```
 
-## License
+### Inicialize o servidor
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```sh
+php artisan serve
+```
+
+## Setup Docker (virtualização do ambiente)
+
+### Clone o projeto
+
+```bash
+cd "caminho/da/sua/pasta"
+git clone https://github.com/DEVinHouse-Zucchetti/M3P-BackEnd
+cd "M3P-BackEnd"
+code ./ #Abrirá o Vscode na raiz do projeto
+```
+
+### Configure o ambiente
+
+Primeiro, é necessário construir as imagens e criar o banco de dados:
+
+```sh
+docker compose up -d --build
+```
+
+Em seguida, execute o setup, que inclui a instalação de dependências, criação do arquivo .env, geração da APP KEY, execução das migrações e das seeds:
+
+```sh
+docker compose exec php composer setup
+```
+
+### Inicialize o servidor
+
+Neste projeto, foi configurado o seguinte comando para facilitar a inicialização:
+
+```sh
+composer serve
+```
+
+## Finalizando/Reiniciando o servidor e a virtualização
+
+### Supondo que irá fechar o vscode
+
+Utilize o comando abaixo que irá derrubar o servidor e parar o container no docker desktop. Evitando que fique rodando em segundo plano.
+
+```sh
+docker compose stop
+```
+
+### Supondo que está reabrindo o vscode
+
+Utilize o comando para inicializar a virtualização:
+
+```sh
+docker compose up
+```
+
+Quando a seguinte frase aparecer: php-1 | [20-Mar-2024 16:56:52] NOTICE: ready to handle connections;
+
+Feche o terminal, abra um novo e rode o comando para inicializar o servidor:
+
+```sh
+composer serve
+```
+
+##
+
+### Comandos para migrações
+
+Para executar uma nova migração:
+
+```sh
+composer migrate
+```
+
+Para reverter:
+
+```sh
+composer rollback
+```
+
+##
+
+### Acessando o bash
+
+Os comandos com composer foram configurados, isto é, são atalhos de comandos maiores. Porém, outro modo de se trabalhar seria acessando o terminal da maquina virtual:
+
+```sh
+docker compose exec php bash
+```
+
+Aparecerá algo como "root@docker-desktop:/var/www# ", dentro desse terminal você poderá rodar todos os comandos que estamos habituados (php artisan serve, php artisan migrate...).
+
+## Executando os Testes Unitários
+
+Para executar os testes, é necessário habilitar o SQLite em memória e executar o comando. Todas as configurações já estão feitas, incluindo o X-debug.
+
+### Habilitação para utilização de sqlite em memoria
+
+No arquivo phpunit.xml, habilite as seguintes linhas:
+
+```xml
+<env name="DB_CONNECTION" value="sqlite" />
+<env name="DB_DATABASE" value=":memory:" />
+```
+
+### Execute o comando para rodar os testes
+
+Se você fez uma migração nova será necessário atualizar o banco de testes com o seguinte comando:
+
+```sh
+php artisan migrate:fresh --seed --env=testing
+```
+
+Em seguida, rode o comando de testes:
+
+```sh
+docker compose exec php php artisan test --coverage --env=testing
+```
+
+##
+
+### Desativação da Virtualização
+
+Para desativar completamente a virtualização, rode o comando:
+
+```sh
+docker compose down
+```
+
+Atenção, se esse comando for executado, será necessário refazer todo o processo de configuração pois tudo será apagado.
+
+## Erros Comuns
+
+### Erro ao executar seed ou rodar teste - violação da regra de email como null:
+
+Esse problema acontece por conta de cache, a máquina virtual não consegue localizar as credenciais presentes no .env.
+
+Para resolver, comece acessando o bash da máquina virtual:
+
+```sh
+docker compose exec php bash
+```
+
+Em seguida rode esses 3 comandos na ordem:
+
+```bash
+php artisan config:clear
+php artisan route:clear
+php artisan route:cache
+```
+
+O problema será resolvido.
+
+## Desisti de usar docker, como voltar e fazer o setup local?
+
+A única mudança necessária é alterar o arquivo .env:
+
+Altere a configuração atual do db host na linha 12 de :
+
+```php
+DB_HOST=db
+```
+
+Para:
+
+```php
+DB_HOST=127.0.0.1
+```
+
+Agora siga o passo a passo para configuração local, pulando a parte da duplicação do env.

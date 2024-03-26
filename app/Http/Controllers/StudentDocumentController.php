@@ -7,32 +7,36 @@ use Illuminate\Http\Request;
 use App\Http\Services\File\CreateFileService;
 use Symfony\Component\HttpFoundation\Response;
 
+use Illuminate\Support\Str;
+
 class StudentDocumentController extends Controller
 {
-    private $createFileService;
 
-    public function __construct(CreateFileService $createFileService)
-    {
-        $this->createFileService = $createFileService;
-    }
-
-    public function store(Request $request)
+    public function store(Request $request, CreateFileService $createFileService)
     {
         try {
             $data = $request->validate([
                 'title' => 'nullable|string|max:255',
                 'file_id' => 'required|exists:files,id',
+                'student_id' => 'required|exists:students,id',
             ]);
 
-            $studentId = auth()->user()->id;
+            $slug = $request->filled('title') ? Str::slug($request->input("title")) : null;
+
+            $file = $createFileService->handle(
+                "student_document",
+                $request->file("document"),
+                $slug
+            );
 
             $document = StudentDocument::create([
                 'title' => $data['title'],
                 'file_id' => $data['file_id'],
-                'student_id' => $studentId,
+                'student_id' => $data['student_id'],
             ]);
 
             return response()->json(['message' => 'Document created successfully', 'document' => $document], Response::HTTP_OK);
+
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
