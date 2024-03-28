@@ -13,8 +13,10 @@ class CreateStudentDocumentsTable extends Migration
             $table->id();
             $table->string('title')->nullable();
             $table->unsignedBigInteger('file_id');
+            $table->unsignedBigInteger('student_id');
             $table->timestamps();
             $table->foreign('file_id')->references('id')->on('files')->onDelete('cascade');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
         });
     }
 
